@@ -1,11 +1,12 @@
 import "./App.css";
-import MyForm from "./MyForm";
+import AfterUpload from "./AfterUpload.tsx";
 
 function App() {
   return (
     <>
       <div>Страница</div>
-      <MyForm />
+      {/*<MyForm />*/}
+        <AfterUpload/>
     </>
   );
 }

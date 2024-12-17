@@ -1,16 +1,16 @@
-// MyForm.tsx
 import React, {useState} from 'react';
+import axios from "axios";
 import {Form, Input, Upload, Button, message, UploadFile} from 'antd';
 import {UploadOutlined} from '@ant-design/icons';
 import {UploadRequestError, UploadRequestOption} from 'rc-upload/lib/interface';
 import {uploadFile} from './services/fileUploadService';
-import axios from "axios";
 import {deleteFile} from "./services/fileDeleteService.ts";
 
 const MyForm: React.FC = () => {
-    const [form] = Form.useForm();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [slides, setSlides] = useState<string[]>([]);
+
+    const [form] = Form.useForm();
 
     const handleImageUpload = async (options: UploadRequestOption) => {
         const {file, onSuccess, onError} = options;
@@ -18,7 +18,7 @@ const MyForm: React.FC = () => {
         try {
             const url = await uploadFile(file as File);
             setImageUrl(url);
-            message.success('Изображение успешно загружено');
+            message.success('Фото успішно завантажено');
             onSuccess?.(url);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
@@ -35,6 +35,7 @@ const MyForm: React.FC = () => {
         }
 
     };
+    
 
     const handleSlidesUpload = async (options: UploadRequestOption) => {
         const {file, onSuccess, onError} = options;
@@ -46,7 +47,6 @@ const MyForm: React.FC = () => {
             onSuccess?.(url);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
-                // Приводим error к типу UploadRequestError
                 onError?.(error as UploadRequestError);
                 message.error(`Ошибка при загрузке файла: ${error.response?.data?.message || error.message}`);
             } else if (error instanceof Error) {
@@ -62,22 +62,15 @@ const MyForm: React.FC = () => {
     };
 
     const handleSlidesRemove = async (file: UploadFile) => {
-        console.log(slides)
-        console.log(file.response)
         if (!file.response) {
             message.error('URL файла отсутствует');
             return;
         }
-
-        // Отправляем запрос на сервер для удаления конкретного файла
-        await deleteFile(file.response); // передаем URL конкретного файла для удаления
-
-        // Обновляем локальное состояние слайдов, удаляя нужный файл
+        await deleteFile(file.response);
         setSlides((prevSlides) => prevSlides.filter((url) => url !== file.url));
-
-        // Показать сообщение об успешном удалении
         message.info('Слайд удален');
     };
+
 
     const onFinish = (values: { title: string; description?: string }) => {
         const payload = {
